@@ -2,6 +2,10 @@
 import React from 'react';
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
 import { AppSidebar } from './AppSidebar';
+import { Header } from './Header';
+import { StatsCards } from './StatsCards';
+import { OmzetChart } from './OmzetChart';
+import { TransactionTable } from './TransactionTable';
 
 export const DashboardLayout = () => {
   return (
@@ -18,10 +22,20 @@ export const DashboardLayout = () => {
           </header>
           <main className="flex-1 p-6">
             <div className="min-h-[calc(100vh-8rem)] bg-gray-50 rounded-lg p-6">
-              <div className="text-center text-gray-500 mt-20">
-                <h2 className="text-2xl font-semibold mb-2">Area Konten Utama</h2>
-                <p>Konten dashboard akan ditampilkan di sini</p>
+              <Header />
+              
+              {/* Stats Cards Grid */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                <StatsCards />
               </div>
+              
+              {/* Chart Section */}
+              <div className="mb-8">
+                <OmzetChart />
+              </div>
+              
+              {/* Transaction Table */}
+              <TransactionTable />
             </div>
           </main>
         </SidebarInset>
