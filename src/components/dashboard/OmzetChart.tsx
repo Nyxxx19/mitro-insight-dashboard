@@ -1,18 +1,34 @@
 
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-
-const data = [
-  { name: 'BUMDes A', omzet: 2400000 },
-  { name: 'BUMDes B', omzet: 1398000 },
-  { name: 'BUMDes C', omzet: 9800000 },
-  { name: 'BUMDes D', omzet: 3908000 },
-  { name: 'BUMDes E', omzet: 4800000 },
-  { name: 'BUMDes F', omzet: 3800000 },
-  { name: 'BUMDes G', omzet: 4300000 },
-];
+import { useMitraOmzetData } from '@/hooks/useMitraData';
 
 export const OmzetChart = () => {
+  const { data: chartData, isLoading, error } = useMitraOmzetData();
+
+  if (error) {
+    console.error('Error in OmzetChart:', error);
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Laporan Omzet per Mitra BUMDes</h3>
+        <div className="h-80 flex items-center justify-center bg-red-50 border border-red-200 rounded">
+          <p className="text-red-600">Error loading chart data: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isLoading) {
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Laporan Omzet per Mitra BUMDes</h3>
+        <div className="h-80 flex items-center justify-center">
+          <p className="text-gray-500">Loading chart data...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -26,7 +42,7 @@ export const OmzetChart = () => {
       
       <div className="h-80">
         <ResponsiveContainer width="100%" height="100%">
-          <BarChart data={data} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+          <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis 
               dataKey="name" 
@@ -39,7 +55,7 @@ export const OmzetChart = () => {
               tickFormatter={(value) => `${(value / 1000000).toFixed(1)}M`}
             />
             <Tooltip 
-              formatter={(value) => [`Rp ${value.toLocaleString('id-ID')}`, 'Omzet']}
+              formatter={(value) => [`Rp ${Number(value).toLocaleString('id-ID')}`, 'Omzet']}
               labelStyle={{ color: '#374151' }}
               contentStyle={{ 
                 backgroundColor: '#fff',

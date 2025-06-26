@@ -1,50 +1,22 @@
 
 import React from 'react';
-
-const transactionData = [
-  {
-    id: 1,
-    namaMitra: 'BUMDes Sejahtera',
-    nik: '1234567890123456',
-    alamat: 'Jl. Raya No. 123, Desa Makmur',
-    noHp: '081234567890',
-    jumlahTransaksi: 'Rp 2.500.000'
-  },
-  {
-    id: 2,
-    namaMitra: 'BUMDes Mandiri',
-    nik: '1234567890123457',
-    alamat: 'Jl. Merdeka No. 456, Desa Sukses',
-    noHp: '081234567891',
-    jumlahTransaksi: 'Rp 1.750.000'
-  },
-  {
-    id: 3,
-    namaMitra: 'BUMDes Berkah',
-    nik: '1234567890123458',
-    alamat: 'Jl. Pancasila No. 789, Desa Jaya',
-    noHp: '081234567892',
-    jumlahTransaksi: 'Rp 3.200.000'
-  },
-  {
-    id: 4,
-    namaMitra: 'BUMDes Makmur',
-    nik: '1234567890123459',
-    alamat: 'Jl. Diponegoro No. 321, Desa Maju',
-    noHp: '081234567893',
-    jumlahTransaksi: 'Rp 1.890.000'
-  },
-  {
-    id: 5,
-    namaMitra: 'BUMDes Jaya',
-    nik: '1234567890123460',
-    alamat: 'Jl. Sudirman No. 654, Desa Bahagia',
-    noHp: '081234567894',
-    jumlahTransaksi: 'Rp 2.100.000'
-  }
-];
+import { useTransactionData } from '@/hooks/useTransactionData';
 
 export const TransactionTable = () => {
+  const { data: transactionData, isLoading, error } = useTransactionData();
+
+  if (error) {
+    console.error('Error in TransactionTable:', error);
+    return (
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+        <h3 className="text-lg font-semibold text-gray-800 mb-4">Data Transaksi Mitra</h3>
+        <div className="bg-red-50 border border-red-200 rounded p-4">
+          <p className="text-red-600">Error loading transaction data: {error.message}</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
       <div className="flex items-center justify-between mb-6">
@@ -67,25 +39,49 @@ export const TransactionTable = () => {
             </tr>
           </thead>
           <tbody>
-            {transactionData.map((item) => (
-              <tr key={item.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
-                <td className="py-3 px-4 text-sm text-gray-800 font-medium">{item.namaMitra}</td>
-                <td className="py-3 px-4 text-sm text-gray-600">{item.nik}</td>
-                <td className="py-3 px-4 text-sm text-gray-600 max-w-xs truncate">{item.alamat}</td>
-                <td className="py-3 px-4 text-sm text-gray-600">{item.noHp}</td>
-                <td className="py-3 px-4 text-sm text-gray-800 font-medium">{item.jumlahTransaksi}</td>
-                <td className="py-3 px-4 text-sm">
-                  <div className="flex space-x-2">
-                    <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
-                      Detail
-                    </button>
-                    <button className="text-green-600 hover:text-green-800 transition-colors duration-200">
-                      Edit
-                    </button>
-                  </div>
+            {isLoading ? (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-gray-500">
+                  Loading transaction data...
                 </td>
               </tr>
-            ))}
+            ) : transactionData && transactionData.length > 0 ? (
+              transactionData.map((item) => (
+                <tr key={item.id_transaksi} className="border-b border-gray-100 hover:bg-gray-50 transition-colors duration-200">
+                  <td className="py-3 px-4 text-sm text-gray-800 font-medium">
+                    {item.mitra_bumdes?.nama_mitra || 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-600">
+                    {item.mitra_bumdes?.nik || 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-600 max-w-xs truncate">
+                    {item.mitra_bumdes?.alamat || 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-600">
+                    {item.mitra_bumdes?.no_hp || 'N/A'}
+                  </td>
+                  <td className="py-3 px-4 text-sm text-gray-800 font-medium">
+                    Rp {item.total_harga?.toLocaleString('id-ID') || '0'}
+                  </td>
+                  <td className="py-3 px-4 text-sm">
+                    <div className="flex space-x-2">
+                      <button className="text-blue-600 hover:text-blue-800 transition-colors duration-200">
+                        Detail
+                      </button>
+                      <button className="text-green-600 hover:text-green-800 transition-colors duration-200">
+                        Edit
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className="py-8 text-center text-gray-500">
+                  No transaction data available
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>
